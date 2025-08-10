@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Audit - Enroll Student</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: #1a001f;
+      color: white;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: gold;
+      margin-bottom: 2rem;
+      animation: fadeInDown 1s ease;
+    }
+
+    form {
+      background: #2c003e;
+      padding: 2rem;
+      border-radius: 15px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+      animation: popIn 1s ease;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 0.3rem;
+      background: #fff;
+      color: #000;
+      font-size: 1rem;
+    }
+
+    input[readonly] {
+      background-color: #eee;
+    }
+
+    button {
+      margin-top: 2rem;
+      width: 100%;
+      padding: 12px;
+      background: gold;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: orange;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Enroll a New Student to Batch</h1>
+  <form id="auditForm">
+    <label>Parent Name</label>
+    <input type="text" id="parentName" required />
+
+    <label>Parent Email</label>
+    <input type="email" id="parentEmail" required />
+
+    <label>Student Name</label>
+    <input type="text" id="studentName" required />
+
+    <label>Student Email</label>
+    <input type="email" id="studentEmail" required />
+
+    <label>Grade</label>
+    <select id="grade" required>
+      <option value="">Select Grade</option>
+      <option value="LKG">LKG</option>
+      <option value="UKG">UKG</option>
+      <option value="1st">1st</option>
+      <option value="2nd">2nd</option>
+      <option value="3rd">3rd</option>
+      <option value="4th">4th</option>
+      <option value="5th">5th</option>
+      <option value="6th">6th</option>
+      <option value="7th">7th</option>
+      <option value="8th">8th</option>
+      <option value="9th">9th</option>
+      <option value="10th">10th</option>
+    </select>
+
+    <label>Batch Name</label>
+    <input type="text" id="batch" placeholder="Eg: Morning Scholars, 2025" required />
+
+    <label>Fees Paid</label>
+    <input type="number" id="feePaid" required />
+
+    <label>Total Fees</label>
+    <input type="number" id="totalFee" required />
+
+    <label>Balance</label>
+    <input type="text" id="balance" readonly />
+
+    <button type="submit">Submit to Firebase</button>
+  </form>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const form = document.getElementById('auditForm');
+    const feePaid = document.getElementById('feePaid');
+    const totalFee = document.getElementById('totalFee');
+    const balance = document.getElementById('balance');
+
+    feePaid.addEventListener('input', calculateBalance);
+    totalFee.addEventListener('input', calculateBalance);
+
+    function calculateBalance() {
+      const paid = parseFloat(feePaid.value) || 0;
+      const total = parseFloat(totalFee.value) || 0;
+      balance.value = total - paid;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        parentName: document.getElementById('parentName').value,
+        parentEmail: document.getElementById('parentEmail').value,
+        studentName: document.getElementById('studentName').value,
+        studentEmail: document.getElementById('studentEmail').value,
+        grade: document.getElementById('grade').value,
+        batch: document.getElementById('batch').value,
+        feePaid: Number(feePaid.value),
+        totalFee: Number(totalFee.value),
+        balance: Number(balance.value),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      db.collection('studentOrders').add(data).then(() => {
+        alert('Student batch enrollment submitted!');
+        form.reset();
+        balance.value = '';
+      }).catch(err => {
+        console.error(err);
+        alert('Failed to submit data.');
+      });
+    });
+  </script>
+</body>
+</html>

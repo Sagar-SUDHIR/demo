@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Events - Vidyashree</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: linear-gradient(to right, #1a001f, #2c003e);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    nav {
+      background: #2c003e;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: gold;
+    }
+    .menu a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1rem;
+      transition: all 0.3s ease;
+    }
+    .menu a:hover {
+      color: gold;
+      transform: scale(1.05);
+    }
+    h1 {
+      text-align: center;
+      color: gold;
+      margin: 2rem 0;
+    }
+    .events-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .event-card {
+      background: #3a0055;
+      padding: 1rem;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .event-card:hover { transform: scale(1.03); }
+    /* Title and description in gold */
+    .event-card h3{
+      color:gold;}
+    .event-card p {
+      color: white;
+      margin-bottom: 1rem;
+    }
+    .watch-btn {
+      background: gold;
+      color: black;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    .watch-btn:hover { background: orange; }
+    footer {
+      background: #2c003e;
+      color: #ccc;
+      text-align: center;
+      padding: 1rem;
+      margin-top: auto;
+    }
+    footer a { color: gold; margin: 0 10px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">Vidyashree</div>
+    <div class="menu">
+      <a href="index.html">Home</a><br>
+      <a href="events.html">Events</a><br>
+      <a href="account.html">Logout</a><br>
+    </div>
+  </nav>
+
+  <h1>School Events</h1>
+  <div class="events-container" id="eventsContainer">
+    <p style="grid-column: 1/-1; text-align: center;">Loading events...</p>
+  </div>
+
+  <footer>
+    <p>© Vidyashree Shikshana Kendra Mulleria Corporate</p>
+    <a href="#">Privacy</a> | <a href="#">Terms</a> | <a href="mailto:sagarvs2140@gmail.com">Contact</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init();</script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+      authDomain: "vidyashree-d52ba.firebaseapp.com",
+      projectId: "vidyashree-d52ba",
+      storageBucket: "vidyashree-d52ba.appspot.com",
+      messagingSenderId: "931104308675",
+      appId: "1:931104308675:web:7335834a9a212714d41176",
+      measurementId: "G-T4CKZX2E73"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const eventsContainer = document.getElementById('eventsContainer');
+
+    db.collection('events').orderBy('timestamp', 'desc').get().then(snapshot => {
+      eventsContainer.innerHTML = '';
+      if (snapshot.empty) {
+        eventsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No events found.</p>';
+        return;
+      }
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const card = document.createElement('div');
+        card.classList.add('event-card');
+        card.setAttribute('data-aos', 'fade-up');
+        card.innerHTML = `
+          <h3>${data.title}</h3>
+          <p>${data.description}</p>
+          <button class="watch-btn">Watch Video</button>
+        `;
+        card.querySelector('.watch-btn').addEventListener('click', () => {
+          window.open(data.videoURL, '_blank');
+        });
+        eventsContainer.appendChild(card);
+      });
+    }).catch(error => {
+      eventsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load events. Please try again later.</p>';
+      console.error('Error fetching events:', error);
+    });
+  </script>
+</body>
+</html>

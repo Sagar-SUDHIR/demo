@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>10th Grade Test - Oxia Learning</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #0b0c10;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: gold;
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 20px;
+      background: #1a1a1a;
+      padding: 15px;
+      border: 2px solid gold;
+      border-radius: 8px;
+    }
+    .question p {
+      margin: 0 0 10px;
+    }
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    .btn {
+      padding: 12px 20px;
+      font-weight: bold;
+      background: gold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: black;
+      display: block;
+      margin: 30px auto;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px gold;
+    }
+  </style>
+</head>
+<body>
+  <h1>📝 10th Grade Test</h1>
+  <form id="testForm">
+    <div id="questionsContainer"></div>
+    <button class="btn" type="submit">Submit Test</button>
+  </form>
+
+  <script>
+   const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const questions = [
+      // 5 from Mathematics
+      { question: "What is the sum of the first 10 natural numbers?", options: ["55", "45", "50", "60"], correct: "55", subject: "Mathematics" },
+      { question: "What is sin(90°)?", options: ["1", "0", "0.5", "-1"], correct: "1", subject: "Mathematics" },
+      { question: "What is the common difference in 2, 4, 6, 8, ...?", options: ["2", "4", "6", "1"], correct: "2", subject: "Mathematics" },
+      { question: "Probability of getting head in a coin toss?", options: ["1/2", "1/3", "1", "0"], correct: "1/2", subject: "Mathematics" },
+      { question: "Find the 5th term of AP: 3, 6, 9, ...", options: ["15", "12", "18", "21"], correct: "15", subject: "Mathematics" },
+
+      // 5 from Physics
+      { question: "What type of lens is used in a magnifying glass?", options: ["Convex", "Concave", "Plane", "None"], correct: "Convex", subject: "Physics" },
+      { question: "What is the unit of frequency?", options: ["Hertz", "Watt", "Newton", "Meter"], correct: "Hertz", subject: "Physics" },
+      { question: "Sound cannot travel through:", options: ["Vacuum", "Air", "Water", "Metal"], correct: "Vacuum", subject: "Physics" },
+      { question: "The image formed by a plane mirror is:", options: ["Virtual", "Real", "Inverted", "None"], correct: "Virtual", subject: "Physics" },
+      { question: "Speed of sound in air?", options: ["343 m/s", "1500 m/s", "300 m/s", "500 m/s"], correct: "343 m/s", subject: "Physics" },
+
+      // 5 from Chemistry
+      { question: "CH₄ is called:", options: ["Methane", "Ethane", "Butane", "Propane"], correct: "Methane", subject: "Chemistry" },
+      { question: "Functional group of alcohol:", options: ["–OH", "–COOH", "–CHO", "–NH₂"], correct: "–OH", subject: "Chemistry" },
+      { question: "NaCl is:", options: ["Salt", "Acid", "Base", "None"], correct: "Salt", subject: "Chemistry" },
+      { question: "Organic compounds mainly contain:", options: ["Carbon", "Sulphur", "Nitrogen", "Calcium"], correct: "Carbon", subject: "Chemistry" },
+      { question: "Acetic acid is also called:", options: ["Vinegar", "Alcohol", "Glucose", "Methane"], correct: "Vinegar", subject: "Chemistry" },
+
+      // 5 from Biology
+      { question: "DNA full form?", options: ["Deoxyribonucleic Acid", "Deoxyribose Acid", "Dioxin Acid", "None"], correct: "Deoxyribonucleic Acid", subject: "Biology" },
+      { question: "RNA helps in:", options: ["Protein synthesis", "Photosynthesis", "Digestion", "Blood clotting"], correct: "Protein synthesis", subject: "Biology" },
+      { question: "Crossing over occurs during:", options: ["Meiosis", "Mitosis", "Fertilization", "None"], correct: "Meiosis", subject: "Biology" },
+      { question: "Charles Darwin proposed:", options: ["Theory of Evolution", "Cell Theory", "Gravity", "Relativity"], correct: "Theory of Evolution", subject: "Biology" },
+      { question: "Basic unit of heredity?", options: ["Gene", "Chromosome", "DNA", "Nucleus"], correct: "Gene", subject: "Biology" },
+
+      // 5 from Social
+      { question: "French Revolution began in:", options: ["1789", "1776", "1800", "1750"], correct: "1789", subject: "Social" },
+      { question: "Bastille was a:", options: ["Prison", "Palace", "School", "Market"], correct: "Prison", subject: "Social" },
+      { question: "Who unified Italy?", options: ["Garibaldi", "Hitler", "Napoleon", "Robespierre"], correct: "Garibaldi", subject: "Social" },
+      { question: "Renaissance means:", options: ["Rebirth", "War", "Revolution", "Science"], correct: "Rebirth", subject: "Social" },
+      { question: "Who led the Jacobin Club?", options: ["Robespierre", "Louis XVI", "Napoleon", "Voltaire"], correct: "Robespierre", subject: "Social" },
+    ];
+
+    const form = document.getElementById("testForm");
+    const container = document.getElementById("questionsContainer");
+
+    questions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<p><strong>Q${index + 1} (${q.subject}):</strong> ${q.question}</p>` +
+        q.options.map(opt =>
+          `<label><input type="radio" name="q${index}" value="${opt}" required> ${opt}</label>`
+        ).join("");
+      container.appendChild(div);
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = prompt("Enter your email to save your test:");
+      if (!email) return alert("Email required!");
+
+      let score = 0;
+      let answers = [];
+
+      questions.forEach((q, i) => {
+        const selected = form[`q${i}`].value;
+        const isCorrect = selected === q.correct;
+        if (isCorrect) score += 4;
+        answers.push({
+          question: q.question,
+          selected,
+          correctAnswer: q.correct,
+          isCorrect,
+          subject: q.subject
+        });
+      });
+
+      await db.collection("test_result10").add({
+        email,
+        score,
+        answers,
+        timestamp: new Date()
+      });
+
+      alert(`Test submitted! You scored ${score} / ${questions.length * 4}`);
+      window.location.href = "student.html";
+    });
+  </script>
+</body>
+</html>

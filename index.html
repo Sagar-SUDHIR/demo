@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vidyashree Shikshana Kendra Mulleria</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"/>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.1/tsparticles.bundle.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1A001F;
+      color: #F5E6C8;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    #particles-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      z-index: -1;
+    }
+
+    header {
+      background-color: #2C003E;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 20px;
+      color: #FFB400;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: #F5E6C8;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .menu-toggle span {
+      background: #FFB400;
+      height: 4px;
+      margin: 5px 0;
+      width: 25px;
+      display: block;
+      border-radius: 4px;
+    }
+
+    .hero-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      max-height: 500px;
+      object-fit: cover;
+    }
+
+    .description {
+      padding: 40px 20px;
+      text-align: center;
+      background: #2C003E;
+    }
+
+    .description h2 {
+      color: #FFB400;
+      margin-bottom: 15px;
+    }
+
+    .buttons {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: transparent;
+      color: #FFB400;
+      padding: 12px 24px;
+      border: 2px solid #FFB400;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #FFB400;
+      color: #1A001F;
+      box-shadow: 0 0 20px #FFB400;
+    }
+
+    .offer-section {
+      padding: 40px 20px;
+      background: #1A001F;
+      text-align: center;
+    }
+
+    .offer-section h2 {
+      color: #FFB400;
+      margin-bottom: 30px;
+    }
+
+    .offer-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .card {
+      background: #2C003E;
+      padding: 20px;
+      border-radius: 12px;
+      width: 250px;
+      transition: 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 0 20px #FFB400;
+    }
+
+    .card h4 {
+      color: #FFB400;
+      margin-bottom: 10px;
+    }
+
+    .card a {
+      color: #80FFD5;
+      text-decoration: underline;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #2C003E;
+      color: #F5E6C8;
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        display: none;
+        flex-direction: column;
+        background: #2C003E;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        padding: 10px;
+        border-radius: 8px;
+      }
+
+      nav ul.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="particles-bg"></div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <img src="logo1.png" width="100px" height="120px">
+  </div>
+  <div class="menu-toggle" onclick="document.querySelector('nav ul').classList.toggle('active')">
+    <span></span><span></span><span></span>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="academics.html">Academics</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="account.html">Account</a></li>
+    </ul>
+  </nav>
+</header>
+
+
+<!-- Description -->
+<div class="description">
+  <h2>Where Culture Meets Excellence</h2>
+  <p>
+    Welcome to Vidyashree Shikshana Kendra Mulleria — a place that celebrates both academic brilliance and cultural values. 
+    Our mission is to nurture students with discipline, curiosity, and creativity.
+  </p>
+  <div class="buttons">
+    <button class="btn" onclick="location.href='about.html'">Learn More</button>
+    <button class="btn" onclick="location.href='account.html'">Login</button>
+    <button class="btn" onclick="location.href='Events .html'">Events</button>
+  </div>
+</div>
+
+<!-- What We Offer -->
+<section class="offer-section">
+  <h2>What We Offer</h2>
+  <div class="offer-cards">
+    <div class="card">
+      <h4>Cultural Activities</h4>
+      <p>Art, dance, traditions & festivals that make learning joyful.</p>
+      <a href="culture.html">Explore →</a>
+    </div>
+    <div class="card">
+      <h4>Academic Results</h4>
+      <p>Top results and consistent performance in board exams.</p>
+      <a href="results.html">See Results →</a>
+    </div>
+    <div class="card">
+      <h4>Our Faculty</h4>
+      <p>Experienced mentors guiding every child with care.</p>
+      <a href="faculty.html">Meet Faculty →</a>
+    </div>
+  </div>
+</section>
+      <h2>Why Choose Oxia?</h2>
+    <div class="why-items">
+      <div class="why-item">
+        <img src="verified.gif" alt="Verified" />
+        <p>Verified questions</p>
+      </div>
+      <div class="why-item">
+        <img src="secure.gif" alt="secure" />
+        <p>Secure</p>
+      </div>
+      <div class="why-item">
+        <img src="finance.gif" alt="Finance" />
+        <p>Easy Payment</p>
+      </div>
+      <div class="why-item">
+        <img src="support.gif" alt="Support" />
+        <p>24/7 Support</p>
+      </div>
+    </div>
+  </section>
+
+
+<!-- Footer -->
+<footer>
+  © 2025 Vidyashree Shikshana Kendra Mulleria
+</footer>
+
+<!-- Particles.js Config -->
+<script>
+  tsParticles.load("particles-bg", {
+    fullScreen: false,
+    background: { color: "transparent" },
+    particles: {
+      number: { value: 40 },
+      color: { value: "#FFB400" },
+      shape: { type: "circle" },
+      size: { value: 2 },
+      move: { enable: true, speed: 1 },
+      links: { enable: true, color: "#FFB400", distance: 120 }
+    }
+  });
+</script>
+<!-- Chatbot Styles -->
+<style>
+.why-section {
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.why-items {
+  background-color:#2C003E;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.why-item {
+  width: 150px;
+  text-align: center;
+}
+
+.why-item img {
+  height: 80px;
+  margin-bottom: 15px;
+}
+
+.why-item p {
+  color: #ffc940;
+  font-weight: 600;
+}
+
+  
+  #chatButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(145deg, #FFB400, #FF9900);
+    color: #1A001F;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 20px #FFB400;
+    z-index: 1000;
+  }
+
+  #chatWindow {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 300px;
+    background: #2C003E;
+    border: 2px solid #FFB400;
+    border-radius: 12px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    color: #F5E6C8;
+    z-index: 999;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  #chatHeader {
+    background: #FFB400;
+    color: #1A001F;
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  #chatMessages {
+    flex: 1;
+    padding: 12px;
+  }
+
+  .bot {
+    background: rgba(255, 180, 0, 0.1);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+
+  .chat-option {
+    background: #FFB400;
+    color: #1A001F;
+    border: none;
+    padding: 10px;
+    margin: 6px 4px 0 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .chat-option:hover {
+    background-color: #ffc500;
+  }
+</style>
+
+<!-- Chatbot Elements -->
+<button id="chatButton">💬</button>
+<div id="chatWindow">
+  <div id="chatHeader">🤖 Vidyashree Bot</div>
+  <div id="chatMessages">
+    <div class="bot">Hi there! Are you a parent or student?</div>
+    <button class="chat-option" onclick="window.location.href='account.html'">👪 Parent</button>
+    <button class="chat-option" onclick="window.location.href='account.html'">👦 Student</button>
+  </div>
+</div>
+
+<!-- Chatbot Script -->
+<script>
+  const chatButton = document.getElementById("chatButton");
+  const chatWindow = document.getElementById("chatWindow");
+
+  chatButton.addEventListener("click", () => {
+    chatWindow.style.display = chatWindow.style.display === "flex" ? "none" : "flex";
+    chatWindow.style.flexDirection = "column";
+  });
+</script>
+ 
+
+<section class="offer-section" style="background: #2C003E;">
+  <h2>What People Say About Us</h2>
+  <div class="offer-cards" id="ratingDisplay">
+  
+  </div>
+</section>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  function renderStars(count) {
+    return '<div style="color: gold; font-size: 18px; margin-bottom: 8px;">' + '★'.repeat(count) + '</div>';
+  }
+
+  db.collection("ratings").orderBy("timestamp", "desc").limit(6).get().then(snapshot => {
+    const container = document.getElementById("ratingDisplay");
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.animation = "fadeInUp 0.8s ease";
+      card.innerHTML = `
+        <h4>${data.email || 'Anonymous'}</h4>
+        ${renderStars(data.rating)}
+  
+      `;
+      container.appendChild(card);
+    });
+  });
+</script>
+
+<!-- Rating card animation (use inside <style> or your existing CSS) -->
+<style>
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</body>
+</html>

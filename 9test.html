@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>9th Grade Test - Oxia Learning</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      background-color: #0e0e0e;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: gold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .question {
+      background: #1f1f1f;
+      padding: 15px;
+      border: 2px solid gold;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      animation: fadeIn 0.5s ease;
+    }
+    .question h3 {
+      color: gold;
+    }
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+    .submit-section {
+      text-align: center;
+      margin-top: 30px;
+    }
+    input[type="email"], button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    input[type="email"] {
+      width: 250px;
+      border: 2px solid gold;
+      background: #1c1c1c;
+      color: white;
+    }
+    button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      box-shadow: 0 0 15px gold;
+      transform: scale(1.05);
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>🧠 9th Grade Practice Test</h1>
+
+<form id="testForm">
+  <div id="questionsContainer"></div>
+
+  <div class="submit-section">
+    <input type="email" id="studentEmail" placeholder="Enter your email" required>
+    <button type="submit">Submit Test</button>
+  </div>
+</form>
+
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const questions = [
+    // MATH
+    {
+      subject: "Mathematics",
+      question: "1. What is the common difference in the arithmetic sequence: 3, 7, 11, 15,...?",
+      options: ["2", "3", "4", "5"],
+      answer: "4"
+    },
+    {
+      subject: "Mathematics",
+      question: "2. Find the 10th term of the sequence: 2, 4, 6, 8,...",
+      options: ["20", "18", "22", "24"],
+      answer: "20"
+    },
+    {
+      subject: "Mathematics",
+      question: "3. Which is a perfect square?",
+      options: ["12", "49", "30", "55"],
+      answer: "49"
+    },
+    {
+      subject: "Mathematics",
+      question: "4. What is the probability of getting a head when tossing a coin?",
+      options: ["1", "0", "1/2", "2"],
+      answer: "1/2"
+    },
+    {
+      subject: "Mathematics",
+      question: "5. What is the value of √81?",
+      options: ["9", "8", "7", "6"],
+      answer: "9"
+    },
+    // PHYSICS
+    {
+      subject: "Physics",
+      question: "6. Which device is used to measure electric current?",
+      options: ["Voltmeter", "Thermometer", "Ammeter", "Barometer"],
+      answer: "Ammeter"
+    },
+    {
+      subject: "Physics",
+      question: "7. What is the unit of force?",
+      options: ["Joule", "Newton", "Watt", "Ampere"],
+      answer: "Newton"
+    },
+    {
+      subject: "Physics",
+      question: "8. What is the speed of sound in air?",
+      options: ["330 m/s", "1500 m/s", "300 m/s", "500 m/s"],
+      answer: "330 m/s"
+    },
+    {
+      subject: "Physics",
+      question: "9. Which mirror is used in a car rear-view mirror?",
+      options: ["Concave", "Convex", "Plane", "None"],
+      answer: "Convex"
+    },
+    {
+      subject: "Physics",
+      question: "10. Sound cannot travel through?",
+      options: ["Water", "Air", "Vacuum", "Steel"],
+      answer: "Vacuum"
+    },
+    // CHEMISTRY
+    {
+      subject: "Chemistry",
+      question: "11. Which is a noble gas?",
+      options: ["Oxygen", "Nitrogen", "Neon", "Hydrogen"],
+      answer: "Neon"
+    },
+    {
+      subject: "Chemistry",
+      question: "12. Water's chemical formula is?",
+      options: ["CO2", "H2O", "NaCl", "O2"],
+      answer: "H2O"
+    },
+    {
+      subject: "Chemistry",
+      question: "13. Which acid is present in lemon?",
+      options: ["Acetic acid", "Citric acid", "Hydrochloric acid", "Nitric acid"],
+      answer: "Citric acid"
+    },
+    {
+      subject: "Chemistry",
+      question: "14. The atomic number of Carbon is?",
+      options: ["12", "6", "8", "10"],
+      answer: "6"
+    },
+    {
+      subject: "Chemistry",
+      question: "15. Which gas is used for respiration?",
+      options: ["Carbon dioxide", "Nitrogen", "Oxygen", "Hydrogen"],
+      answer: "Oxygen"
+    },
+    // BIOLOGY
+    {
+      subject: "Biology",
+      question: "16. The powerhouse of the cell is?",
+      options: ["Ribosome", "Nucleus", "Mitochondria", "Chloroplast"],
+      answer: "Mitochondria"
+    },
+    {
+      subject: "Biology",
+      question: "17. Which organ helps in pumping blood?",
+      options: ["Lungs", "Heart", "Kidney", "Liver"],
+      answer: "Heart"
+    },
+    {
+      subject: "Biology",
+      question: "18. Which vitamin is synthesized by the skin?",
+      options: ["Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"],
+      answer: "Vitamin D"
+    },
+    {
+      subject: "Biology",
+      question: "19. What is the function of RBC?",
+      options: ["Fight germs", "Transport oxygen", "Store fat", "Digest food"],
+      answer: "Transport oxygen"
+    },
+    {
+      subject: "Biology",
+      question: "20. What is the basic unit of life?",
+      options: ["Atom", "Cell", "Tissue", "Organ"],
+      answer: "Cell"
+    },
+    // SOCIAL
+    {
+      subject: "Social",
+      question: "21. Who wrote the Indian Constitution?",
+      options: ["Jawaharlal Nehru", "Mahatma Gandhi", "B.R. Ambedkar", "Subhash Chandra Bose"],
+      answer: "B.R. Ambedkar"
+    },
+    {
+      subject: "Social",
+      question: "22. What is the capital of Kerala?",
+      options: ["Kochi", "Kozhikode", "Thiruvananthapuram", "Kannur"],
+      answer: "Thiruvananthapuram"
+    },
+    {
+      subject: "Social",
+      question: "23. When did India become independent?",
+      options: ["1945", "1947", "1950", "1930"],
+      answer: "1947"
+    },
+    {
+      subject: "Social",
+      question: "24. What is the lower house of Parliament called?",
+      options: ["Rajya Sabha", "Lok Sabha", "Vidhan Sabha", "Panchayat"],
+      answer: "Lok Sabha"
+    },
+    {
+      subject: "Social",
+      question: "25. In which year was the UN formed?",
+      options: ["1940", "1945", "1950", "1939"],
+      answer: "1945"
+    }
+  ];
+
+  const container = document.getElementById("questionsContainer");
+  questions.forEach((q, index) => {
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `<h3>${q.question}</h3>` + q.options.map(opt => `
+      <label><input type="radio" name="q${index}" value="${opt}">${opt}</label><br>
+    `).join("");
+    container.appendChild(div);
+  });
+
+  document.getElementById("testForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("studentEmail").value.trim();
+    if (!email) return alert("Please enter your email.");
+
+    let correct = 0;
+    const answers = [];
+
+    questions.forEach((q, i) => {
+      const chosen = document.querySelector(`input[name="q${i}"]:checked`);
+      const isCorrect = chosen && chosen.value === q.answer;
+      if (isCorrect) correct++;
+      answers.push({
+        question: q.question,
+        selected: chosen ? chosen.value : "Not Answered",
+        correctAnswer: q.answer,
+        isCorrect: isCorrect,
+        subject: q.subject
+      });
+    });
+
+    await db.collection("test_result9").add({
+      email,
+      answers,
+      score: correct * 4,
+      total: questions.length * 4,
+      timestamp: new Date()
+    });
+
+    alert(`Test submitted! You scored ${correct * 4}/${questions.length * 4}`);
+    location.reload();
+  });
+</script>
+</body>
+</html>

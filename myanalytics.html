@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📊 My Analytics - Vidyashree</title>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f3f6fd;
+      color: #1a1a1a;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    h1 {
+      text-align: center;
+      color: #25316D;
+      margin-bottom: 30px;
+    }
+    .input-area {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    input, select, button {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 2px solid gold;
+      outline: none;
+    }
+    input, select {
+      background: white;
+      color: #1a1a1a;
+    }
+    button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px gold;
+    }
+    .result-box {
+      max-width: 700px;
+      margin: 0 auto 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 2px solid #25316D;
+    }
+    .result-box h2 {
+      color: #25316D;
+      margin-bottom: 15px;
+    }
+    .subject-line {
+      margin: 6px 0;
+      font-size: 1.05rem;
+    }
+    .summary {
+      text-align: center;
+      font-size: 1.15rem;
+      margin-top: 10px;
+      color: #25316D;
+    }
+    canvas {
+      margin: 20px auto;
+      display: block;
+      max-width: 600px;
+    }
+    .no-data {
+      text-align: center;
+      color: red;
+      margin-top: 30px;
+    }
+
+    /* Navbar styles */
+    header {
+      background-color: #25316D;
+      padding: 1rem 2rem;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .menu {
+      display: flex;
+      gap: 1rem;
+      list-style: none;
+    }
+    .menu li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .menu li a:hover {
+      color: gold;
+      transform: scale(1.05);
+    }
+    .hamburger {
+      display: none;
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 10px;
+        background: #3a0055;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        animation: slideDown 0.3s ease;
+      }
+      .menu.show {
+        display: flex;
+      }
+      .hamburger {
+        display: block;
+      }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <strong>Vidyashree Analytics</strong>
+      <div class="hamburger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </div>
+      <ul class="menu" id="menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="rate.html">Rating</a></li>
+        <li><a href="account.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <h1>📊 My Analytics</h1>
+
+  <div class="input-area">
+    <input type="email" id="studentEmail" placeholder="Enter your email">
+    <select id="gradeSelect">
+      <option value="">Select Grade</option>
+      <option value="8">8th</option>
+      <option value="9">9th</option>
+      <option value="10">10th</option>
+    </select>
+    <button onclick="loadAnalytics()">Get Result</button>
+  </div>
+
+  <div id="analyticsResults"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+      authDomain: "vidyashree-d52ba.firebaseapp.com",
+      projectId: "vidyashree-d52ba",
+      storageBucket: "vidyashree-d52ba.firebasestorage.app",
+      messagingSenderId: "931104308675",
+      appId: "1:931104308675:web:7335834a9a212714d41176",
+      measurementId: "G-T4CKZX2E73"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function loadAnalytics() {
+      const email = document.getElementById("studentEmail").value.trim().toLowerCase();
+      const grade = document.getElementById("gradeSelect").value;
+      const container = document.getElementById("analyticsResults");
+      container.innerHTML = "";
+
+      if (!email || !grade) {
+        alert("Please enter your email and grade.");
+        return;
+      }
+
+      const collectionName = `test_result${grade}`;
+      const snapshot = await db.collection(collectionName).where("email", "==", email).get();
+
+      if (snapshot.empty) {
+        container.innerHTML = "<p class='no-data'>No test results found for this grade.</p>";
+        return;
+      }
+
+      let subjectScores = {};
+      let totalMarks = 0;
+      let totalPossible = 0;
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.answers && Array.isArray(data.answers)) {
+          data.answers.forEach(({ subject, isCorrect }) => {
+            if (!subjectScores[subject]) subjectScores[subject] = { correct: 0, total: 0 };
+            subjectScores[subject].total++;
+            if (isCorrect) subjectScores[subject].correct++;
+          });
+        }
+      });
+
+      const resultBox = document.createElement("div");
+      resultBox.className = "result-box";
+      resultBox.innerHTML = `<h2>Grade ${grade} Result</h2>`;
+
+      let best = null, worst = null;
+      let chartLabels = [], chartData = [];
+
+      for (let subject in subjectScores) {
+        const score = subjectScores[subject].correct * 4;
+        const outOf = subjectScores[subject].total * 4;
+        totalMarks += score;
+        totalPossible += outOf;
+
+        chartLabels.push(subject);
+        chartData.push(((score / outOf) * 100).toFixed(1));
+
+        resultBox.innerHTML += `<div class="subject-line">📘 ${subject}: ${score}/${outOf} marks</div>`;
+
+        if (!best || score > best.score) best = { subject, score };
+        if (!worst || score < worst.score) worst = { subject, score };
+      }
+
+      resultBox.innerHTML += `<div class="summary">🧮 Total Marks: ${totalMarks}/${totalPossible}</div>`;
+
+      if (best && worst && best.subject === worst.subject) {
+        resultBox.innerHTML += `<div class="summary">✨ Very good attempt!</div>`;
+      } else {
+        resultBox.innerHTML += `
+          <div class="summary">🥇 Best Performance: ${best.subject} (${best.score} marks)</div>
+          <div class="summary">🔍 Needs Practice: ${worst.subject} (${worst.score} marks)</div>
+        `;
+      }
+
+      container.appendChild(resultBox);
+
+      const chartCanvas = document.createElement("canvas");
+      container.appendChild(chartCanvas);
+
+      new Chart(chartCanvas.getContext("2d"), {
+        type: "bar",
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: "Accuracy (%)",
+            data: chartData,
+            backgroundColor: "#ffc107"
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true, max: 100 }
+          }
+        }
+      });
+    }
+
+    function toggleMenu() {
+      document.getElementById('menu').classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

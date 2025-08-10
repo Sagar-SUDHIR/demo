@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rate Us - Vidyashree</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg-light: #f5f5f5;
+      --bg-dark: #121212;
+      --text-light: #121212;
+      --text-dark: #f5f5f5;
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #1e1e1e;
+      --star-color: gold;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      transition: background 0.3s, color 0.3s;
+      background: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #003366;
+      padding: 1rem 2rem;
+      color: white;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    .nav-btns a {
+      color: white;
+      text-decoration: none;
+      margin-left: 15px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 3rem auto;
+      background: var(--card-bg-light);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-mode .container {
+      background: var(--card-bg-dark);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: inherit;
+      color: inherit;
+    }
+
+    .stars {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .stars i {
+      cursor: pointer;
+      color: #ccc;
+      transition: transform 0.2s;
+    }
+
+    .stars i.selected {
+      color: var(--star-color);
+      transform: scale(1.2);
+      text-shadow: 0 0 10px var(--star-color);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.9rem;
+      background: #007BFF;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      background: #003366;
+      color: white;
+      margin-top: 3rem;
+    }
+  /* Media Queries for Mobile and Tablet Responsiveness */
+
+@media screen and (max-width: 1024px) {
+  nav ul {
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--bg-color);
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    display: none;
+  }
+
+  nav ul.show {
+    display: flex;
+  }
+
+  .menu-icon {
+    display: block;
+    cursor: pointer;
+  }
+
+  .navbar-links {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .card {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .form-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-container input,
+  .form-container textarea,
+  .form-container button {
+    width: 100%;
+  }
+
+  .rating-stars {
+    font-size: 28px;
+  }
+
+  .navbar {
+    padding: 10px 15px;
+  }
+
+  .footer {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  h1, h2, h3 {
+    font-size: 1.2rem;
+  }
+
+  .rating-box {
+    padding: 10px;
+  }
+
+  .toggle-switch {
+    transform: scale(0.8);
+  }
+
+  .logout-button,
+  .navbar-button {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+
+  .footer {
+    font-size: 13px;
+  }
+}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Rate Us</h1>
+    <div class="nav-btns">
+      <a href="index.html"><i class="fas fa-home"></i> Home</a><br>
+      <a href="parent.html"><i class="fas fa-user"></i> Parent Dashboard</a><br>
+      <div class="toggle-switch">
+        <label class="switch">
+          <input type="checkbox" id="modeToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>We value your feedback!</h2>
+    <input type="email" id="email" placeholder="Your Email" required />
+    <textarea id="desc" rows="4" placeholder="Write your feedback..."></textarea>
+    
+    <div class="stars" id="starContainer">
+      <i class="fas fa-star" data-star="1"></i>
+      <i class="fas fa-star" data-star="2"></i>
+      <i class="fas fa-star" data-star="3"></i>
+      <i class="fas fa-star" data-star="4"></i>
+      <i class="fas fa-star" data-star="5"></i>
+    </div>
+
+    <button onclick="submitRating()">Submit Rating</button>
+  </div>
+
+  <footer>
+    © Vidyashree Shikshana Kendra Mulleria | Privacy | Terms & Conditions | Contact
+  </footer>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let selectedRating = 0;
+
+    document.querySelectorAll('#starContainer i').forEach(star => {
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.star);
+        document.querySelectorAll('#starContainer i').forEach(s => {
+          s.classList.toggle('selected', parseInt(s.dataset.star) <= selectedRating);
+        });
+      });
+    });
+
+    window.submitRating = async () => {
+      const email = document.getElementById('email').value.trim();
+      const desc = document.getElementById('desc').value.trim();
+
+      if (!email || !desc || selectedRating === 0) {
+        alert("Please fill out all fields and select a rating.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "ratings"), {
+          email,
+          description: desc,
+          rating: selectedRating,
+          timestamp: new Date()
+        });
+        alert("Thank you for your feedback!");
+        document.getElementById('email').value = '';
+        document.getElementById('desc').value = '';
+        selectedRating = 0;
+        document.querySelectorAll('#starContainer i').forEach(s => s.classList.remove('selected'));
+      } catch (e) {
+        console.error("Error submitting rating:", e);
+        alert("Something went wrong. Please try again.");
+      }
+    };
+
+    // Dark/Light Mode Toggle
+    const toggleSwitch = document.getElementById("modeToggle");
+    toggleSwitch.addEventListener('change', () => {
+      document.body.classList.toggle("dark-mode");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>8th Grade Test - Oxia Learning</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      background-color: #0e0e0e;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: gold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .question {
+      background: #1f1f1f;
+      padding: 15px;
+      border: 2px solid gold;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      animation: fadeIn 0.5s ease;
+    }
+    .question h3 {
+      color: gold;
+    }
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+    .submit-section {
+      text-align: center;
+      margin-top: 30px;
+    }
+    input[type="email"], button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    input[type="email"] {
+      width: 250px;
+      border: 2px solid gold;
+      background: #1c1c1c;
+      color: white;
+    }
+    button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      box-shadow: 0 0 15px gold;
+      transform: scale(1.05);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<h1>📘 8th Grade Test</h1>
+
+<form id="testForm">
+  <div id="questionsContainer"></div>
+
+  <div class="submit-section">
+    <input type="email" id="studentEmail" placeholder="Enter your email" required />
+    <button type="submit">Submit Test</button>
+  </div>
+</form>
+
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const questions = [
+    // MATH
+    { subject: "Mathematics", question: "1. What is 7 × 8?", options: ["54", "56", "58", "60"], answer: "56" },
+    { subject: "Mathematics", question: "2. Simplify: 3² + 4²", options: ["12", "16", "25", "13"], answer: "25" },
+    { subject: "Mathematics", question: "3. What is the perimeter of a square of side 6 cm?", options: ["12", "24", "36", "18"], answer: "24" },
+    { subject: "Mathematics", question: "4. Find the LCM of 6 and 8.", options: ["24", "12", "48", "16"], answer: "24" },
+    { subject: "Mathematics", question: "5. What is 1/4 + 1/2?", options: ["3/4", "1/8", "1", "2/4"], answer: "3/4" },
+
+    // PHYSICS
+    { subject: "Physics", question: "6. Which instrument is used to measure temperature?", options: ["Barometer", "Thermometer", "Hygrometer", "Voltmeter"], answer: "Thermometer" },
+    { subject: "Physics", question: "7. What force pulls objects toward the Earth?", options: ["Magnetism", "Friction", "Gravity", "Electricity"], answer: "Gravity" },
+    { subject: "Physics", question: "8. Sound travels fastest through?", options: ["Air", "Water", "Steel", "Vacuum"], answer: "Steel" },
+    { subject: "Physics", question: "9. Unit of current is?", options: ["Volt", "Ohm", "Watt", "Ampere"], answer: "Ampere" },
+    { subject: "Physics", question: "10. Which surface reflects most light?", options: ["Black", "Rough", "White", "Green"], answer: "White" },
+
+    // CHEMISTRY
+    { subject: "Chemistry", question: "11. What is the chemical symbol of Iron?", options: ["Fe", "Ir", "In", "I"], answer: "Fe" },
+    { subject: "Chemistry", question: "12. Which gas is used in balloons?", options: ["Oxygen", "Hydrogen", "Helium", "Carbon dioxide"], answer: "Helium" },
+    { subject: "Chemistry", question: "13. Water boils at?", options: ["50°C", "100°C", "90°C", "60°C"], answer: "100°C" },
+    { subject: "Chemistry", question: "14. What is HCl?", options: ["Hydrogen chloride", "Sodium", "Acetic acid", "Nitrogen"], answer: "Hydrogen chloride" },
+    { subject: "Chemistry", question: "15. What is the pH of pure water?", options: ["7", "6", "8", "10"], answer: "7" },
+
+    // BIOLOGY
+    { subject: "Biology", question: "16. Which part of the plant makes food?", options: ["Root", "Stem", "Leaf", "Flower"], answer: "Leaf" },
+    { subject: "Biology", question: "17. Bones are connected to muscles by?", options: ["Ligaments", "Tendons", "Cartilage", "Nerves"], answer: "Tendons" },
+    { subject: "Biology", question: "18. Which organ filters blood?", options: ["Heart", "Liver", "Kidney", "Lungs"], answer: "Kidney" },
+    { subject: "Biology", question: "19. Which vitamin helps in blood clotting?", options: ["A", "B", "K", "D"], answer: "K" },
+    { subject: "Biology", question: "20. Largest organ in human body?", options: ["Liver", "Brain", "Skin", "Lung"], answer: "Skin" },
+
+    // SOCIAL
+    { subject: "Social", question: "21. Who was the first President of India?", options: ["Jawaharlal Nehru", "Rajendra Prasad", "Indira Gandhi", "B.R. Ambedkar"], answer: "Rajendra Prasad" },
+    { subject: "Social", question: "22. Which is not a continent?", options: ["Asia", "Australia", "Arctic", "Africa"], answer: "Arctic" },
+    { subject: "Social", question: "23. What is democracy?", options: ["Rule by one", "Rule by king", "Rule by people", "Rule by army"], answer: "Rule by people" },
+    { subject: "Social", question: "24. India is located in which continent?", options: ["Europe", "Asia", "Africa", "Australia"], answer: "Asia" },
+    { subject: "Social", question: "25. Capital of India?", options: ["Mumbai", "Chennai", "Delhi", "Kolkata"], answer: "Delhi" }
+  ];
+
+  const container = document.getElementById("questionsContainer");
+  questions.forEach((q, index) => {
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `<h3>${q.question}</h3>` + q.options.map(opt => `
+      <label><input type="radio" name="q${index}" value="${opt}">${opt}</label><br>
+    `).join("");
+    container.appendChild(div);
+  });
+
+  document.getElementById("testForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("studentEmail").value.trim();
+    if (!email) return alert("Please enter your email.");
+
+    let correct = 0;
+    const answers = [];
+
+    questions.forEach((q, i) => {
+      const chosen = document.querySelector(`input[name="q${i}"]:checked`);
+      const isCorrect = chosen && chosen.value === q.answer;
+      if (isCorrect) correct++;
+      answers.push({
+        question: q.question,
+        selected: chosen ? chosen.value : "Not Answered",
+        correctAnswer: q.answer,
+        isCorrect: isCorrect,
+        subject: q.subject
+      });
+    });
+
+    await db.collection("test_result8").add({
+      email,
+      answers,
+      score: correct * 4,
+      total: questions.length * 4,
+      timestamp: new Date()
+    });
+
+    alert(`Test submitted! You scored ${correct * 4}/${questions.length * 4}`);
+    location.reload();
+  });
+</script>
+
+</body>
+</html>

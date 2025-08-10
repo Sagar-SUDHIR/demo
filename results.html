@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Our Achievers | Vidyashree</title>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.1/tsparticles.bundle.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1A001F, #2C003E);
+      color: #F5E6C8;
+      position: relative;
+      overflow-x: hidden;
+      padding: 0 15px;
+    }
+
+    #particles-bg {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+
+    header h1 {
+      color: #FFB400;
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    .section {
+      margin: 40px auto;
+      max-width: 1000px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(255, 180, 0, 0.3);
+    }
+
+    .section h2 {
+      text-align: center;
+      color: #FFD700;
+      margin-bottom: 10px;
+    }
+
+    .section p {
+      text-align: center;
+      font-size: 1.1em;
+      margin-bottom: 30px;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+    }
+
+    .photo-card {
+      background: #2C003E;
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 10px;
+      width: 200px;
+      box-shadow: 0 0 20px #FFB400;
+      animation: glow 2s infinite alternate;
+      text-align: center;
+    }
+
+    .photo-card img {
+      width: 100%;
+      border-radius: 10px;
+      border: 3px solid #FFB400;
+    }
+
+    .photo-card p {
+      margin-top: 10px;
+      color: #FFDE59;
+      font-weight: bold;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 10px #FFB400; }
+      100% { box-shadow: 0 0 25px #FFB400; }
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="particles-bg"></div>
+
+<header>
+  <h1>Our Achievers</h1>
+</header>
+
+<!-- 2024-2025 Achievers -->
+<div class="section">
+  <h2>🏆 Batch 2024–2025</h2>
+  <p>We proudly present our bright stars who topped the academic charts in the 2024–25 academic year. Their dedication and discipline are an inspiration to all future learners.</p>
+  <div class="grid">
+    <div class="photo-card">
+      <img src="achiever1.jpg" alt="Achiever 1">
+      <p>Batch 2024-2025</p>
+    </div>
+    
+    <!-- Add more achievers as needed -->
+  </div>
+</div>
+
+<!-- 2023-2024 Achievers -->
+<div class="section">
+  <h2>🥇 Batch 2023–2024</h2>
+  <p>The 2023–24 batch has shown remarkable excellence both in academics and cultural events. We salute these young minds for their brilliance and discipline.</p>
+  <div class="grid">
+    <div class="photo-card">
+      <img src="achiever2.jpg" alt="Achiever 2">
+      <p>Batch 2023-2024</p>
+    </div>
+    <!-- Add more achievers as needed -->
+  </div>
+</div>
+
+<script>
+  tsParticles.load("particles-bg", {
+    fullScreen: { enable: false },
+    particles: {
+      number: { value: 25 },
+      color: { value: "#FFD700" },
+      shape: { type: "circle" },
+      opacity: { value: 0.8 },
+      size: { value: 2 },
+      move: { enable: true, speed: 1 },
+      links: { enable: true, color: "#FFD700" }
+    }
+  });
+</script>
+</body>
+</html>

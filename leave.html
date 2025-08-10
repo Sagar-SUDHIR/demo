@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Leave Application & My Leave Notes - Vidyashree</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: linear-gradient(to right, #1a001f, #2c003e);
+      color: white;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      background: #3a0055;
+      padding: 2rem;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+      margin-bottom: 3rem;
+    }
+    h2 {
+      text-align: center;
+      color: gold;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      color: gold;
+    }
+    input[type="email"],
+    input[type="text"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: 'Rubik', sans-serif;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    input[type="submit"] {
+      background: gold;
+      color: black;
+      font-weight: 700;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.3s ease;
+    }
+    input[type="submit"]:hover {
+      background: orange;
+    }
+    .confirmation-message {
+      margin-top: 1.5rem;
+      background: rgba(255, 215, 0, 0.1);
+      padding: 1rem 1.2rem;
+      border-radius: 10px;
+      color: gold;
+      font-weight: 600;
+      text-align: center;
+    }
+    .status {
+      font-weight: 700;
+      text-transform: capitalize;
+      color: #ffd700;
+    }
+    /* My Leave Notes */
+    #myLeaveNotes {
+      background: #3a0055;
+      padding: 1rem 1.5rem;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+      color: gold;
+    }
+    #myLeaveNotes h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: gold;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: gold;
+    }
+    th, td {
+      padding: 0.5rem 0.8rem;
+      border-bottom: 1px solid #4e004b;
+      text-align: left;
+    }
+    thead {
+      background: #5a007a;
+    }
+    .status.pending { color: gold; }
+    .status.approved { color: #00c853; }
+    .status.rejected { color: #d50000; }
+    .no-leaves {
+      text-align: center;
+      padding: 1rem;
+      font-style: italic;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Leave Application</h2>
+    <form id="leaveForm">
+      <label for="startDate">Leave Start Date</label>
+      <input type="date" id="startDate" name="startDate" required />
+
+      <label for="endDate">Leave End Date</label>
+      <input type="date" id="endDate" name="endDate" required />
+
+      <label for="reason">Reason</label>
+      <textarea id="reason" name="reason" placeholder="Enter reason for leave" required></textarea>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="your.email@example.com" required />
+
+      <label for="admissionNumber">Admission Number</label>
+      <input type="text" id="admissionNumber" name="admissionNumber" placeholder="Admission Number" required />
+
+      <input type="submit" value="Submit Leave Request" />
+    </form>
+
+    <div id="confirmation" class="confirmation-message" style="display:none;"></div>
+  </div>
+
+  <div id="myLeaveNotes">
+    <h2>My Leave Notes</h2>
+    <div id="leaveList">
+      <p class="no-leaves">Enter your email above to see your leave requests.</p>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+      authDomain: "vidyashree-d52ba.firebaseapp.com",
+      projectId: "vidyashree-d52ba",
+      storageBucket: "vidyashree-d52ba.appspot.com",
+      messagingSenderId: "931104308675",
+      appId: "1:931104308675:web:7335834a9a212714d41176",
+      measurementId: "G-T4CKZX2E73"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const form = document.getElementById('leaveForm');
+    const confirmationDiv = document.getElementById('confirmation');
+    const emailInput = document.getElementById('email');
+    const leaveListDiv = document.getElementById('leaveList');
+
+    // Submit new leave request
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const startDate = form.startDate.value;
+      const endDate = form.endDate.value;
+      const reason = form.reason.value.trim();
+      const email = form.email.value.trim();
+      const admissionNumber = form.admissionNumber.value.trim();
+
+      if (startDate > endDate) {
+        alert('Error: Leave start date cannot be after end date.');
+        return;
+      }
+
+      try {
+        await db.collection('leaveRequests').add({
+          startDate,
+          endDate,
+          reason,
+          email,
+          admissionNumber,
+          status: 'pending',
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        confirmationDiv.style.display = 'block';
+        confirmationDiv.innerHTML = `
+          Leave request submitted successfully!<br/>
+          <strong>Email:</strong> ${email}<br/>
+          <strong>Status:</strong> <span class="status">Pending</span>
+        `;
+
+        form.reset();
+        leaveListDiv.innerHTML = '<p class="no-leaves">Loading your leave requests...</p>';
+        loadLeaveRequests(email); // refresh the user's leave list
+      } catch (error) {
+        console.error('Error submitting leave request:', error);
+        alert('Failed to submit leave request. Please try again later.');
+      }
+    });
+
+    // Load leave requests for given email and display
+    async function loadLeaveRequests(email) {
+      if (!email) {
+        leaveListDiv.innerHTML = '<p class="no-leaves">Enter your email above to see your leave requests.</p>';
+        return;
+      }
+
+      try {
+        const snapshot = await db.collection('leaveRequests')
+          .where('email', '==', email)
+          .get();
+
+        if (snapshot.empty) {
+          leaveListDiv.innerHTML = '<p class="no-leaves">No leave requests found for this email.</p>';
+          return;
+        }
+
+        let html = '<table><thead><tr>' +
+          '<th>Start Date</th><th>End Date</th><th>Reason</th><th>Status</th><th>Submitted At</th>' +
+          '</tr></thead><tbody>';
+
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          const startDate = d.startDate || '-';
+          const endDate = d.endDate || '-';
+          const reason = d.reason || '-';
+          const status = d.status || 'pending';
+          const timestamp = d.timestamp ? d.timestamp.toDate().toLocaleString() : '-';
+
+          html += `<tr>
+            <td>${startDate}</td>
+            <td>${endDate}</td>
+            <td>${reason}</td>
+            <td class="status ${status}">${status}</td>
+            <td>${timestamp}</td>
+          </tr>`;
+        });
+
+        html += '</tbody></table>';
+        leaveListDiv.innerHTML = html;
+
+      } catch (error) {
+        console.error('Error loading leave requests:', error);
+        leaveListDiv.innerHTML = '<p class="no-leaves" style="color: red;">Failed to load your leave requests.</p>';
+      }
+    }
+
+    // Load leave requests as user types or changes email input (with debounce)
+    let debounceTimer;
+    emailInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        const email = emailInput.value.trim();
+        loadLeaveRequests(email);
+      }, 500);
+    });
+
+    // Optional: on page load if email field already has value
+    if (emailInput.value.trim()) {
+      loadLeaveRequests(emailInput.value.trim());
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Events - Vidyashree</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: linear-gradient(to right, #1a001f, #2c003e);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    nav {
+      background: #2c003e;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: gold;
+    }
+    .menu a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1rem;
+      transition: all 0.3s ease;
+    }
+    .menu a:hover {
+      color: gold;
+      transform: scale(1.05);
+    }
+    h1 {
+      text-align: center;
+      color: gold;
+      margin: 2rem 0;
+    }
+    .form-container {
+      max-width: 500px;
+      margin: auto;
+      background: #3a0055;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+    }
+    .form-container input, .form-container textarea, .form-container button {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-container input, .form-container textarea {
+      background: #4b006e;
+      color: white;
+    }
+    .form-container button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .form-container button:hover {
+      background: orange;
+    }
+    .events-list {
+      margin-top: 2rem;
+      padding: 1rem;
+    }
+    .event-item {
+      background: #3a0055;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .event-item h3 {
+      color: gold;
+    }
+    .delete-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    footer {
+      background: #2c003e;
+      color: #ccc;
+      text-align: center;
+      padding: 1rem;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">Vidyashree Admin</div>
+    <div class="menu">
+      <a href="admin.html">Home</a>
+      <a href="admin.events.html">Events</a>
+      <a href="account.html">Logout</a>
+    </div>
+  </nav>
+
+  <h1>Manage Events</h1>
+  <div class="form-container">
+    <input type="text" id="title" placeholder="Event Title" required />
+    <textarea id="description" placeholder="Event Description" required></textarea>
+    <input type="text" id="videoURL" placeholder="YouTube Embed URL" required />
+    <button id="addEventBtn">Add Event</button>
+  </div>
+
+  <div class="events-list" id="eventsList">
+    <p style="text-align: center;">Loading events...</p>
+  </div>
+
+  <footer>
+    <p>© Vidyashree Shikshana Kendra Mulleria Corporate</p>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    const videoURLInput = document.getElementById('videoURL');
+    const addEventBtn = document.getElementById('addEventBtn');
+    const eventsList = document.getElementById('eventsList');
+
+    addEventBtn.addEventListener('click', () => {
+      const title = titleInput.value.trim();
+      const description = descriptionInput.value.trim();
+      const videoURL = videoURLInput.value.trim();
+
+      if (title && description && videoURL) {
+        db.collection('events').add({
+          title,
+          description,
+          videoURL,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          titleInput.value = '';
+          descriptionInput.value = '';
+          videoURLInput.value = '';
+          alert('Event added successfully!');
+        }).catch(err => alert(err.message));
+      } else {
+        alert('Please fill all fields.');
+      }
+    });
+
+    // Real-time event list
+    db.collection('events').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+      eventsList.innerHTML = '';
+      if (snapshot.empty) {
+        eventsList.innerHTML = '<p style="text-align: center;">No events found.</p>';
+        return;
+      }
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const item = document.createElement('div');
+        item.classList.add('event-item');
+        item.innerHTML = `
+          <div>
+            <h3>${data.title}</h3>
+            <p>${data.description}</p>
+          </div>
+          <button class="delete-btn">Delete</button>
+        `;
+        item.querySelector('.delete-btn').addEventListener('click', () => {
+          if (confirm('Delete this event?')) {
+            db.collection('events').doc(doc.id).delete();
+          }
+        });
+        eventsList.appendChild(item);
+      });
+    });
+  </script>
+</body>
+</html>

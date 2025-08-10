@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parent Dashboard - Vidyashree</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f6fd;
+      overflow-x: hidden;
+    }
+    header {
+      background-color: #25316D;
+      padding: 1rem 2rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      background: gold;
+      left: 0;
+      bottom: -5px;
+      transition: 0.3s ease;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .logout-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .hero {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: linear-gradient(to right, #fff6e0, #e0f7fa);
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #2f2f2f;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+    }
+    .footer {
+      background: #1e1e2f;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .footer a {
+      color: #ffdf00;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+    @media (max-width: 768px) {
+      nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      nav a {
+        margin: 0.5rem 0;
+      }
+    }
+  /* Basic navbar style */
+.navbar {
+  background: #25316D;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: gold;
+}
+
+/* Menu links */
+.menu {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+}
+
+.menu li a {
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.menu li a:hover {
+  color: grey;
+  transform: scale(1.05);
+}
+
+/* Hamburger hidden by default */
+.hamburger {
+  display: none;
+  font-size: 1.5rem;
+  color: red;
+  cursor: pointer;
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  .menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    background: #25316D;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    animation: slideDown 0.3s ease;
+  }
+
+  .menu.show {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
+}
+
+/* Animation for dropdown */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>Vidyashree Parent Dashboard</strong></div>
+   <nav class="navbar">
+  
+  <div class="hamburger" onclick="toggleMenu()">
+    <i class="fas fa-bars"></i>
+  </div>
+  
+  <ul class="menu" id="menu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="mychild.html">My Student</a></li>
+    <li><a href="mychildanalytics.html">Analytics</a></li>
+    <li><a href="rate.html">Rating</a></li>
+    <li><a href="account.html">Logout</a></li>
+  </ul>
+</nav>
+
+<!-- Font Awesome for hamburger icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  </header>
+  <div id="popupNotifications" style="position: fixed; top: 70px; right: 20px; z-index: 9999;"></div>
+
+  <section class="hero" data-aos="fade-up">
+    <h1>Why Vidyashree Shikshana Kendra is Special</h1>
+    <p>Empowering students with tradition, culture, and modern education</p>
+  </section>
+
+  <section class="cards">
+    <div class="card" data-aos="fade-right">
+      <h3>Rich Cultural Heritage</h3>
+      <p>We blend tradition with values to build character and confidence.</p>
+    </div>
+    <div class="card" data-aos="fade-up">
+      <h3>Holistic Education</h3>
+      <p>Academics, arts, and life skills nurtured through balanced learning.</p>
+    </div>
+    <div class="card" data-aos="fade-left">
+      <h3>Dedicated Faculty</h3>
+      <p>Expert mentors guiding every child to reach their full potential.</p>
+    </div>
+    <div class="card" data-aos="fade-right">
+      <h3>Spiritual Foundation</h3>
+      <p>Morning prayers, meditation, and values-driven assemblies.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 Vidyashree Shikshana Kendra Mulleria Corporate</p>
+    <p>
+      <a href="mailto:sagarvs2140@gmail.com?subject=Vidyashree%20Shikshana Kendra Mulleria%20Inquiry&body=Hello%20admin%2C%0AI%20am%20interested%20in%20your%20web.">Mail us</a> |
+      <a href="#">Privacy Policy</a> |
+      <a href="#">Terms & Conditions</a> |
+      <a href="#">Contact</a>
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init();
+
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        alert("Logged out successfully.");
+        window.location.href = "account.html";
+      });
+    }
+
+    function copyMail() {
+      navigator.clipboard.writeText("sagarvs2140@gmail.com").then(() => {
+        alert("Email copied to clipboard");
+      });
+    }
+  </script>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+    firebase.initializeApp(firebaseConfig);
+  </script> 
+  <script>
+  const db = firebase.firestore();
+
+  function showNotificationCard(title, message) {
+    const container = document.getElementById('popupNotifications');
+    const card = document.createElement('div');
+
+    card.innerHTML = `
+      <div style="
+        background: #fffbea;
+        border-left: 6px solid gold;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        max-width: 300px;
+        animation: fadeInSlide 0.6s ease;
+        position: relative;
+      ">
+        <strong>📢 ${title}</strong>
+        <p style="margin: 8px 0;">${message}</p>
+        <button onclick="this.parentElement.remove()" style="
+          position: absolute;
+          top: 5px;
+          right: 10px;
+          background: transparent;
+          border: none;
+          font-size: 1.2rem;
+          cursor: pointer;
+        ">×</button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  }
+
+  // Animation
+  const style = document.createElement('style');
+  style.innerHTML = `
+    @keyframes fadeInSlide {
+      0% { opacity: 0; transform: translateX(50px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Fetch latest announcements
+  db.collection("announcements")
+    .orderBy("date", "desc")
+    .limit(3)
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        showNotificationCard(data.title, data.message);
+      });
+    });
+ 
+</script>
+ <script>
+function toggleMenu() {
+  document.getElementById('menu').classList.toggle('show');
+}
+</script>  
+</body>
+</html>

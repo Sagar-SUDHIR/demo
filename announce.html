@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📤 Upload Announcement - Vidyashree</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #fef9f4, #e9f5ff);
+      color: #222;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #25316D;
+      margin-bottom: 2rem;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      border-left: 6px solid #007BFF;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 1rem 0 0.5rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #007BFF;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #f9f9f9;
+      resize: none;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: #007BFF;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .success-msg {
+      margin-top: 1rem;
+      color: green;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📤 Upload New Announcement</h1>
+
+  <div class="form-container">
+    <label for="title">Heading</label>
+    <input type="text" id="title" placeholder="Enter title (e.g., Science Fair)">
+
+    <label for="message">Message</label>
+    <textarea id="message" rows="5" placeholder="Enter full announcement..."></textarea>
+
+    <label for="date">Date</label>
+    <input type="date" id="date">
+
+    <button onclick="uploadAnnouncement()">Submit Announcement</button>
+
+    <p class="success-msg" id="successMsg"></p>
+  </div>
+
+  <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function uploadAnnouncement() {
+      const title = document.getElementById("title").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const date = document.getElementById("date").value;
+
+      if (!title || !message || !date) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      await db.collection("announcements").add({ title, message, date });
+      document.getElementById("successMsg").textContent = "✅ Announcement uploaded successfully!";
+      document.getElementById("title").value = "";
+      document.getElementById("message").value = "";
+      document.getElementById("date").value = "";
+    }
+  </script>
+</body>
+</html>

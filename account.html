@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account | My School</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #1A001F;
+      color: #F5E6C8;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    .form-box {
+      background: #2C003E;
+      max-width: 400px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 12px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      padding: 12px 25px;
+      background-color: #FFB400;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      width: 100%;
+      cursor: pointer;
+    }
+    .toggle-btn {
+      background: none;
+      color: #FFB400;
+      border: none;
+      font-weight: bold;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    .role-select {
+      display: flex;
+      justify-content: space-around;
+      margin: 10px 0;
+    }
+    .role-select label {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Welcome to My School</h1>
+  <div class="form-box">
+    <h2 id="formTitle">Login</h2>
+
+    <div class="role-select">
+      <label><input type="radio" name="role" value="student" checked> Student</label>
+      <label><input type="radio" name="role" value="parent"> Parent</label>
+      <label><input type="radio" name="role" value="admin"> Admin</label>
+    </div>
+
+    <form id="accountForm">
+      <div id="nameField" style="display: none;">
+        <input type="text" id="name" placeholder="Full Name" />
+      </div>
+
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+
+      <button type="submit" id="submitBtn">Login as Student</button>
+    </form>
+
+    <button class="toggle-btn" onclick="toggleForm()">Switch to Sign Up</button>
+
+    <div id="message" style="margin-top: 20px; color: lightgreen;"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let isLogin = true;
+
+    const roleInputs = document.getElementsByName("role");
+    const nameField = document.getElementById("nameField");
+    const formTitle = document.getElementById("formTitle");
+    const submitBtn = document.getElementById("submitBtn");
+    const message = document.getElementById("message");
+
+    roleInputs.forEach(radio => {
+      radio.addEventListener("change", updateButtonText);
+    });
+
+    function updateButtonText() {
+      const role = getSelectedRole();
+      submitBtn.textContent = (isLogin ? "Login as " : "Sign Up as ") + capitalize(role);
+    }
+
+    function toggleForm() {
+      isLogin = !isLogin;
+      formTitle.textContent = isLogin ? "Login" : "Sign Up";
+      nameField.style.display = isLogin ? "none" : "block";
+      updateButtonText();
+    }
+
+    function getSelectedRole() {
+      for (let r of roleInputs) {
+        if (r.checked) return r.value;
+      }
+      return "student";
+    }
+
+    function capitalize(text) {
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    updateButtonText(); // ✅ This is what was missing before
+
+    document.getElementById("accountForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const role = getSelectedRole();
+
+      message.textContent = "⏳ Processing...";
+
+      try {
+        if (isLogin) {
+          const result = await auth.signInWithEmailAndPassword(email, password);
+          const uid = result.user.uid;
+          const userDoc = await db.collection("users").doc(uid).get();
+
+          if (userDoc.exists && userDoc.data().role === role) {
+            if (role === "admin" && email !== "sagarvswebsite@gmail.com") {
+              message.textContent = "❌ You are not authorized to log in as admin.";
+              return;
+            }
+
+            message.textContent = "✅ Logged in!";
+            if (role === "student") window.location.href = "student.html";
+            else if (role === "parent") window.location.href = "parent.html";
+            else if (role === "admin") window.location.href = "admin.html";
+          } else {
+            message.textContent = "❌ Role mismatch or user not found.";
+          }
+
+        } else {
+          const result = await auth.createUserWithEmailAndPassword(email, password);
+          const uid = result.user.uid;
+          await db.collection("users").doc(uid).set({
+            name: name,
+            email: email,
+            role: role,
+            createdAt: new Date()
+          });
+          message.textContent = "✅ Account created!";
+        }
+      } catch (err) {
+        console.error(err);
+        message.textContent = "❌ Error: " + err.message;
+      }
+    });
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Batch Orders</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: #1a001f;
+      color: white;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: gold;
+      animation: fadeIn 1s ease;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .controls input, .controls select, .controls button {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: none;
+    }
+
+    .controls input, .controls select {
+      background: white;
+      color: black;
+    }
+
+    .controls button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      background: orange;
+    }
+
+    .order-card {
+      background: #2c003e;
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+      animation: slideUp 0.5s ease;
+      transition: transform 0.3s;
+    }
+
+    .order-card:hover {
+      transform: scale(1.02);
+    }
+
+    .order-card p {
+      margin: 0.3rem 0;
+    }
+
+    .order-card .highlight {
+      font-weight: bold;
+      color: gold;
+    }
+
+    .delete-btn {
+      margin-top: 0.8rem;
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: red;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h1>All Batch Orders</h1>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Search by Student Name or Grade" />
+    <select id="sortSelect">
+      <option value="">Sort By</option>
+      <option value="alpha">Alphabetical (A-Z)</option>
+      <option value="grade">Grade</option>
+    </select>
+    <button id="promoteBtn">Promote All</button>
+  </div>
+
+  <div id="ordersContainer"></div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const container = document.getElementById("ordersContainer");
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
+    const promoteBtn = document.getElementById("promoteBtn");
+
+    let orders = [];
+
+    const gradeList = ["LKG", "UKG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+
+    function renderOrders(data) {
+      container.innerHTML = "";
+      data.forEach(doc => {
+        const d = doc.data();
+        const card = document.createElement("div");
+        card.className = "order-card";
+        const balance = d.totalFee - d.feePaid;
+        const farewell = d.grade === "10th" ? "<p><em>🎓 Thanks for being with us for 12 years!</em></p>" : "";
+
+        card.innerHTML = `
+          <p><span class="highlight">Student:</span> ${d.studentName} (${d.studentEmail})</p>
+          <p><span class="highlight">Parent:</span> ${d.parentName} (${d.parentEmail})</p>
+          <p><span class="highlight">Grade:</span> ${d.grade} | <span class="highlight">Batch:</span> ${d.batch}</p>
+          <p><span class="highlight">Fees Paid:</span> ₹${d.feePaid} / ₹${d.totalFee} | <span class="highlight">Balance:</span> ₹${balance}</p>
+          ${farewell}
+          <button class="delete-btn" onclick="deleteOrder('${doc.id}')">Delete</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function loadOrders() {
+      db.collection("studentOrders").get().then(snapshot => {
+        orders = snapshot.docs;
+        renderOrders(orders);
+      });
+    }
+
+    searchInput.addEventListener("input", () => {
+      const val = searchInput.value.toLowerCase();
+      const filtered = orders.filter(doc => {
+        const d = doc.data();
+        return (
+          d.studentName.toLowerCase().includes(val) ||
+          d.grade.toLowerCase().includes(val)
+        );
+      });
+      renderOrders(filtered);
+    });
+
+    sortSelect.addEventListener("change", () => {
+      const type = sortSelect.value;
+      const sorted = [...orders].sort((a, b) => {
+        const d1 = a.data(), d2 = b.data();
+        if (type === "alpha") {
+          return d1.studentName.localeCompare(d2.studentName);
+        } else if (type === "grade") {
+          return gradeList.indexOf(d1.grade) - gradeList.indexOf(d2.grade);
+        }
+        return 0;
+      });
+      renderOrders(sorted);
+    });
+
+    function deleteOrder(id) {
+      if (confirm("Are you sure to delete this student?")) {
+        db.collection("studentOrders").doc(id).delete().then(loadOrders);
+      }
+    }
+
+    promoteBtn.addEventListener("click", () => {
+      orders.forEach(doc => {
+        const d = doc.data();
+        const index = gradeList.indexOf(d.grade);
+        if (index !== -1 && index < gradeList.length - 1) {
+          db.collection("studentOrders").doc(doc.id).update({
+            grade: gradeList[index + 1]
+          });
+        }
+      });
+      alert("Promotion complete!");
+      setTimeout(loadOrders, 1500);
+    });
+
+    loadOrders();
+  </script>
+</body>
+</html>
