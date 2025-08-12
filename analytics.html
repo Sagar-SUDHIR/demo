@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📊 My Child's Analytics - Vidyashree</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f3f6fd;
+      color: #1a1a1a;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #25316D;
+      margin-bottom: 30px;
+    }
+    .input-area {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    input, select, button {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 2px solid gold;
+      outline: none;
+    }
+    input, select {
+      background: white;
+      color: #1a1a1a;
+    }
+    button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px gold;
+    }
+    .result-box {
+      max-width: 700px;
+      margin: 0 auto 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 2px solid #25316D;
+    }
+    .result-box h2 {
+      color: #25316D;
+      margin-bottom: 10px;
+    }
+    .subject-line {
+      margin: 5px 0;
+      font-size: 1.1rem;
+    }
+    .summary {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #1a1a1a;
+      margin-top: 10px;
+    }
+    canvas {
+      margin: 20px auto;
+      display: block;
+      max-width: 600px;
+    }
+    .no-data {
+      text-align: center;
+      color: red;
+      margin-top: 30px;
+    }
+    .download-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #25316D;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 My Child's Performance</h1>
+
+  <div class="input-area">
+    <input type="email" id="studentEmail" placeholder="Enter child’s email">
+    <select id="gradeSelect">
+      <option value="">Select Grade</option>
+      <option value="8">8th</option>
+      <option value="9">9th</option>
+      <option value="10">10th</option>
+    </select>
+    <button onclick="loadAnalytics()">Get Result</button>
+  </div>
+
+  <div id="analyticsResults"></div>
+
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyAcU6re1dMKhp-UEsr8uS-h26cvQ_Qo95I",
+  authDomain: "vidyashree-d52ba.firebaseapp.com",
+  projectId: "vidyashree-d52ba",
+  storageBucket: "vidyashree-d52ba.firebasestorage.app",
+  messagingSenderId: "931104308675",
+  appId: "1:931104308675:web:7335834a9a212714d41176",
+  measurementId: "G-T4CKZX2E73"
+};
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let downloadedText = "";
+
+    async function loadAnalytics() {
+      const email = document.getElementById("studentEmail").value.trim().toLowerCase();
+      const grade = document.getElementById("gradeSelect").value;
+      const container = document.getElementById("analyticsResults");
+      container.innerHTML = "";
+      downloadedText = "";
+
+      if (!email || !grade) {
+        alert("Please enter email and grade.");
+        return;
+      }
+
+      const collectionName = `test_result${grade}`;
+      const snapshot = await db.collection(collectionName).where("email", "==", email).get();
+
+      if (snapshot.empty) {
+        container.innerHTML = "<p class='no-data'>No test results found for this child.</p>";
+        return;
+      }
+
+      let subjectScores = {};
+      let totalMarks = 0;
+      let totalPossible = 0;
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.answers && Array.isArray(data.answers)) {
+          data.answers.forEach(({ subject, isCorrect }) => {
+            if (!subjectScores[subject]) subjectScores[subject] = { correct: 0, total: 0 };
+            subjectScores[subject].total++;
+            if (isCorrect) subjectScores[subject].correct++;
+          });
+        }
+      });
+
+      const resultBox = document.createElement("div");
+      resultBox.className = "result-box";
+      resultBox.innerHTML = `<h2>Grade ${grade} Report</h2>`;
+
+      let best = null, worst = null;
+      let chartLabels = [], chartData = [];
+
+      downloadedText += `Child Email: ${email}\nGrade: ${grade}\n\nSubject-wise Scores:\n`;
+
+      for (let subject in subjectScores) {
+        const score = subjectScores[subject].correct * 4;
+        const outOf = subjectScores[subject].total * 4;
+        totalMarks += score;
+        totalPossible += outOf;
+
+        chartLabels.push(subject);
+        chartData.push(((score / outOf) * 100).toFixed(1));
+
+        resultBox.innerHTML += `<div class="subject-line">📘 ${subject}: ${score}/${outOf} marks</div>`;
+        downloadedText += `${subject}: ${score}/${outOf} marks\n`;
+
+        if (!best || score > best.score) best = { subject, score };
+        if (!worst || score < worst.score) worst = { subject, score };
+      }
+
+      const percentage = ((totalMarks / totalPossible) * 100).toFixed(1);
+      downloadedText += `\nTotal: ${totalMarks}/${totalPossible}\nPercentage: ${percentage}%\n`;
+
+      resultBox.innerHTML += `<div class="summary">🧮 Total Marks: ${totalMarks}/${totalPossible} (${percentage}%)</div>`;
+
+      if (best && worst && best.subject === worst.subject) {
+        resultBox.innerHTML += `<div class="summary">✨ Very good attempt!</div>`;
+        downloadedText += "Performance: Excellent in all subjects.\n";
+      } else {
+        resultBox.innerHTML += `<div class="summary">🥇 Best: ${best.subject} (${best.score} marks)</div>`;
+        resultBox.innerHTML += `<div class="summary">🔍 Needs Practice: ${worst.subject} (${worst.score} marks)</div>`;
+        downloadedText += `Best: ${best.subject}\nNeeds Practice: ${worst.subject}\n`;
+      }
+
+      const downloadBtn = document.createElement("button");
+      downloadBtn.className = "download-btn";
+      downloadBtn.innerText = "📥 Download Marks";
+      downloadBtn.onclick = () => {
+        const blob = new Blob([downloadedText], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${email}_report.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+      container.appendChild(resultBox);
+      container.appendChild(downloadBtn);
+
+      const chartCanvas = document.createElement("canvas");
+      container.appendChild(chartCanvas);
+
+      new Chart(chartCanvas.getContext("2d"), {
+        type: "bar",
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: "Accuracy (%)",
+            data: chartData,
+            backgroundColor: "#25316D"
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true, max: 100 }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
